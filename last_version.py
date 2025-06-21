@@ -17,7 +17,7 @@ RECOGNITION_PAD = 0.1            # Similar to PAD in Kotlin code
 INPUT_SIZE = 112                 # MobileFaceNet input size
 EMBEDDING_SIZE = 192             # Output embedding size
 CLASS_ID = 3                     # The class ID to track attendance for
-PRESENCE_THRESHOLD = 60          # Minimum seconds to consider a student present
+PRESENCE_THRESHOLD = 30          # Minimum seconds to consider a student present
 DOOR_COOLDOWN = 5                # Seconds to wait before allowing another detection for the same student
 
 class Student:
@@ -311,7 +311,7 @@ class FaceRecognitionSystem:
                 for item in attendance_list:
                     student = next((s for s in self.students if s.id == item["studentId"]), None)
                     if student:
-                        print(f"  {student.name} {student.surname}: Present={item['present']}, Duration={self.format_duration(item['duration'])}")
+                        print(f"  {student.name} {student.surname}: Present={item['present']}, Duration={self.format_duration(item['duration']*60)}")
                 
                 response = requests.post(
                     f"{SERVER_URL}/classes/{CLASS_ID}/attendances",
@@ -343,7 +343,7 @@ class FaceRecognitionSystem:
             return
         
         # Start camera
-        cap = cv2.VideoCapture(CAMERA_ID)
+        cap = cv2.VideoCapture(CAMERA_ID, cv2.CAP_DSHOW)
         self.active = True
         
         # Set resolution to improve performance
